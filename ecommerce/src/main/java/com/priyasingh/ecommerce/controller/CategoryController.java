@@ -1,10 +1,12 @@
 package com.priyasingh.ecommerce.controller;
 
 import com.priyasingh.ecommerce.model.Category;
+import com.priyasingh.ecommerce.payload.CategoryDTO;
 import com.priyasingh.ecommerce.payload.CategoryResponse;
 import com.priyasingh.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.Cleanup;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +31,9 @@ public class CategoryController {
     }
 
     @PostMapping("/public/categories")
-     public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
-        categoryService.createCategory(category);
-        return new ResponseEntity<>("Category Created", HttpStatus.CREATED);
+     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO createdCategoryDTO = categoryService.createCategory(categoryDTO);
+        return new ResponseEntity<>(createdCategoryDTO, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
