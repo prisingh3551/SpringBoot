@@ -2,12 +2,16 @@ package com.priyasingh.ecommerce.service;
 
 import com.priyasingh.ecommerce.exceptions.APIException;
 import com.priyasingh.ecommerce.model.Category;
+import com.priyasingh.ecommerce.payload.CategoryDTO;
+import com.priyasingh.ecommerce.payload.CategoryResponse;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.priyasingh.ecommerce.repository.CategoryRepository;
 import com.priyasingh.ecommerce.exceptions.ResourseNotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImplementation implements CategoryService {
@@ -15,12 +19,22 @@ public class CategoryServiceImplementation implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public List<Category> getAllCategories() {
+    public CategoryResponse getAllCategories() {
         List<Category> allCategories = categoryRepository.findAll();
         if(allCategories.isEmpty())
             throw new APIException("No category created till now");
-        return allCategories;
+
+        List<CategoryDTO> categoryDTOs = allCategories.stream()
+                .map(category -> modelMapper.map(category, CategoryDTO.class))
+                .toList();
+
+        CategoryResponse categoryResponse = new CategoryResponse();
+        categoryResponse.setContent(categoryDTOs);
+        return categoryResponse;
     }
 
     @Override

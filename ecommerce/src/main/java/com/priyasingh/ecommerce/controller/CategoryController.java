@@ -1,6 +1,7 @@
 package com.priyasingh.ecommerce.controller;
 
 import com.priyasingh.ecommerce.model.Category;
+import com.priyasingh.ecommerce.payload.CategoryResponse;
 import com.priyasingh.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.Cleanup;
@@ -22,9 +23,9 @@ public class CategoryController {
     }
 
     @GetMapping("/public/categories")
-    public ResponseEntity<List<Category>> getCategoryList() {
-        List<Category> categories = categoryService.getAllCategories();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+    public ResponseEntity<CategoryResponse> getCategoryList() {
+        CategoryResponse categoryResponse = categoryService.getAllCategories();
+        return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
     @PostMapping("/public/categories")
