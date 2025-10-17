@@ -6,12 +6,14 @@ import com.priyasingh.ecommerce.payload.CategoryDTO;
 import com.priyasingh.ecommerce.payload.CategoryResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.priyasingh.ecommerce.repository.CategoryRepository;
 import com.priyasingh.ecommerce.exceptions.ResourseNotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImplementation implements CategoryService {
@@ -23,8 +25,11 @@ public class CategoryServiceImplementation implements CategoryService {
     private ModelMapper modelMapper;
 
     @Override
-    public CategoryResponse getAllCategories() {
-        List<Category> allCategories = categoryRepository.findAll();
+    public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize) {
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize);
+        Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
+
+        List<Category> allCategories = categoryPage.getContent() ;
         if(allCategories.isEmpty())
             throw new APIException("No category created till now");
 
@@ -34,6 +39,12 @@ public class CategoryServiceImplementation implements CategoryService {
 
         CategoryResponse categoryResponse = new CategoryResponse();
         categoryResponse.setContent(categoryDTOs);
+        categoryResponse.setPageNumber(categoryPage.getNumber());
+        categoryResponse.setPageSize(categoryPage.getSize());
+        categoryResponse.setTotalElements(categoryPage.getTotalElements());
+        categoryResponse.setTotalPages(categoryPage.getTotalPages());
+        categoryResponse.setLastPage(categoryPage.isLast());
+
         return categoryResponse;
     }
 
@@ -51,21 +62,22 @@ public class CategoryServiceImplementation implements CategoryService {
     }
 
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).
                 orElseThrow(() -> new ResourseNotFoundException("Category", "categoryId", categoryId));
 
         categoryRepository.delete(category);
-        return "Category with categoryId : " + categoryId + " deleted successfully";
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
     @Override
-    public Category updateCategory(Long categoryId, Category category) {
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categoryId) {
         Category savedCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourseNotFoundException("Category", "categoryId", categoryId));
 
+        Category category = modelMapper.map(categoryDTO, Category.class);
         savedCategory.setCategoryName(category.getCategoryName());
         savedCategory = categoryRepository.save(savedCategory);
-        return savedCategory;
+        return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 }
