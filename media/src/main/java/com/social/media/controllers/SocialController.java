@@ -25,12 +25,4 @@ public class SocialController {
     public ResponseEntity<SocialUser> addUser(@RequestBody SocialUser socialUser) {
         return new ResponseEntity<>(socialService.addUser(socialUser), HttpStatus.CREATED);
     }
-
-//    @DeleteMapping("/social/delete/{userId}")
-//    public ResponseEntity<SocialUser> deleteUser(@PathVariable("userId") Long userId) {
-//        SocialUser socialUser = socialService.findById(userId).
-//                orElse(null);
-//
-//        return ResonseEntity.ok(socialUser);
-//    }
 }
