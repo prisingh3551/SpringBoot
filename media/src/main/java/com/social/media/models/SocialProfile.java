@@ -19,13 +19,11 @@ public class SocialProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "socialProfile")
+    @OneToOne
+    @JoinColumn(name = "social_user")
     @JsonIgnore
     private SocialUser socialUser;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+    private String description;
 }
 
