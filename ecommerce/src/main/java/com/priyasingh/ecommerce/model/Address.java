@@ -3,6 +3,7 @@ package com.priyasingh.ecommerce.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "addresses")
 @NoArgsConstructor
+@Data
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,9 +43,9 @@ public class Address {
     @Size(min = 6, message = "Pin code must be atleast 5 characters")
     private String pincode;
 
-    @ManyToMany(mappedBy = "addresses")
-    @ToString.Exclude
-    private List<User> users = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Address(String street, String buildingName, String city, String state, String country, String pincode) {
         this.street = street;
